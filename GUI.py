@@ -58,11 +58,15 @@ def calculate():
             'message': f'An error occurred: {str(e)}'
         }), 500
 
-def map_ke_to_size(mass_kg, speed_km_s):
-    v = speed_km_s * 1000.0
-    KE = 0.5 * mass_kg * v * v
-    s = 2.0 + math.log10(KE + 1.0) / 3.0
-    return max(1.5, min(s, 6.0))  # ellipse full width
+def map_ke_to_size(mass_kg, speed_km_s, ke_min=1e9, ke_max=1e14):
+    v = speed_km_s * 1000.0  # m/s
+    KE = 0.5 * mass_kg * v * v  # Joules
+
+    # Map log10(KE) from [ke_min, ke_max] to [2, 14] units of full width
+    logK = math.log10(max(KE, 1.0))
+    t = (logK - math.log10(ke_min)) / (math.log10(ke_max) - math.log10(ke_min))
+    t = max(0.0, min(t, 1.0))
+    return 2.0 + t * 12.0
 
 def map_height_to_ecc(height_km, ref_km=50.0):
     frac = max(0.0, min(height_km / ref_km, 1.0))
@@ -95,9 +99,9 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
     y_line = [-a * math.sin(theta), a * math.sin(theta)]
     ax.plot(x_line, y_line, color="red", lw=2)
 
-    m = max(a, b) * 1.2
-    ax.set_xlim(-m, m)
-    ax.set_ylim(-m, m)
+    canvas = 12.0
+    ax.set_xlim(-canvas, canvas)
+    ax.set_ylim(-canvas, canvas)
     ax.axis("off")
 
     buf = io.BytesIO()
@@ -126,4 +130,5 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
 
