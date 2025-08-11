@@ -1,5 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 import os
+import io, base64, math
+import matplotlib
+matplotlib.use("Agg")  # required on servers
+import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
+import numpy as np
+
 
 app = Flask(__name__)
 
@@ -24,6 +31,8 @@ def calculate():
         height_of_burst = float(request.form['height_of_burst'])
         entry_angle = float(request.form['entry_angle'])
         
+        image_b64 = generate_damage_image(mass, speed, height_of_burst, entry_angle)
+
         # Here you can add your calculation logic
         # For now, just returning the input values
         result = {
@@ -32,7 +41,8 @@ def calculate():
             'height_of_burst': height_of_burst,
             'entry_angle': entry_angle,
             'status': 'success',
-            'message': 'Parameters received successfully!'
+            'message': 'Parameters received successfully!',
+            'image': image_b64
         }
         
         return jsonify(result)
@@ -48,6 +58,53 @@ def calculate():
             'message': f'An error occurred: {str(e)}'
         }), 500
 
+def map_ke_to_size(mass_kg, speed_km_s):
+    v = speed_km_s * 1000.0
+    KE = 0.5 * mass_kg * v * v
+    s = 2.0 + math.log10(KE + 1.0) / 3.0
+    return max(1.5, min(s, 6.0))  # ellipse full width
+
+def map_height_to_ecc(height_km, ref_km=50.0):
+    frac = max(0.0, min(height_km / ref_km, 1.0))
+    e = 1.0 - 0.9 * frac
+    return max(0.05, min(e, 0.95))
+
+def mass_to_gray(mass_kg, ref_mass=10000.0):
+    g = max(0.0, min(mass_kg / ref_mass, 1.0))
+    gray = 1.0 - 0.85 * g
+    return str(gray)
+
+def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
+    width = map_ke_to_size(mass, speed)            # major axis
+    e = map_height_to_ecc(height_of_burst)         # eccentricity
+    a = width / 2.0
+    b = a * math.sqrt(max(1.0 - e * e, 0.0025))    # semi minor
+    height_val = 2.0 * b
+    face = mass_to_gray(mass)
+    angle = entry_angle_deg
+
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.set_aspect("equal")
+
+    ell = Ellipse((0, 0), width, height_val, angle=angle,
+                  edgecolor="black", facecolor=face, lw=2)
+    ax.add_patch(ell)
+
+    theta = math.radians(angle)
+    x_line = [-a * math.cos(theta), a * math.cos(theta)]
+    y_line = [-a * math.sin(theta), a * math.sin(theta)]
+    ax.plot(x_line, y_line, color="red", lw=2)
+
+    m = max(a, b) * 1.2
+    ax.set_xlim(-m, m)
+    ax.set_ylim(-m, m)
+    ax.axis("off")
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
+    plt.close(fig)
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode("utf-8")
 
 def main():
     """
@@ -69,3 +126,4 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
