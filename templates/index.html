@@ -85,6 +85,16 @@
             <div class="result-item"><span class="result-label">Height of Burst:</span><span>${data.height_of_burst} km</span></div>
             <div class="result-item"><span class="result-label">Entry Angle:</span><span>${data.entry_angle}°</span></div>
           `;
+          // Show the generated image if present
+          if (data.image) {
+            const img = document.createElement('img');
+            img.src = 'data:image/png;base64,' + data.image;
+            img.style.maxWidth = '320px';
+            img.style.display = 'block';
+            img.style.marginTop = '20px';
+            content.appendChild(img);
+          }
+
         } else {
           resultDiv.classList.add('error');
           msg.textContent = data.message;
