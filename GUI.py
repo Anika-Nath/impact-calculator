@@ -129,7 +129,7 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
         transform=ax.transAxes,
         fontsize=7, linespacing=1.3,
         va="top", ha="left",
-        bbox=dict(facecolor="white", alpha=0.9, edgecolor="#dddddd", boxstyle="round,pad=0.3")
+        bbox=dict(facecolor="white", alpha=0.9, edgecolor="#000000", boxstyle="round,pad=0.3")
     )
 
 
@@ -164,6 +164,7 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
 
 
 
