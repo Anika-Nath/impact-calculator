@@ -124,19 +124,13 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
         "  • Line shows major-axis direction."
     )
     
-    # Add legend with better formatting
-    ax.legend(
-        loc="upper right",
-        fontsize=7,
-        frameon=True,
-        fancybox=True,
-        framealpha=1,
-        edgecolor="black",
-        handlelength=0,
-        handletextpad=0,
-        borderaxespad=0.5
-    ).get_frame().set_boxstyle("square,pad=0.3")
-
+    ax.text(
+        1.02, 0.98, legend_text,
+        transform=ax.transAxes,
+        fontsize=7, linespacing=1.3,
+        va="top", ha="left",
+        bbox=dict(facecolor="white", alpha=0.9, edgecolor="#000000", boxstyle="round,pad=0.3")
+    )
 
 
     canvas = 12.0
@@ -170,8 +164,6 @@ def main():
 if __name__ == "__main__":
 
     main() 
-
-
 
 
 
