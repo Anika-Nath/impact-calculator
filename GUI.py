@@ -99,6 +99,22 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
     y_line = [-a * math.sin(theta), a * math.sin(theta)]
     ax.plot(x_line, y_line, color="red", lw=2)
 
+    # Add legend
+    legend_labels = [
+        f"Mass shading (darker = larger mass)",
+        f"KE → ellipse size (computed from mass & speed)",
+        f"Height of burst → eccentricity",
+        f"Entry angle → orientation of ellipse"
+    ]
+    
+    # Plot invisible points just to get legend entries
+    ax.plot([], [], color="black", label=legend_labels[0])
+    ax.plot([], [], color="gray", label=legend_labels[1])
+    ax.plot([], [], color="blue", label=legend_labels[2])
+    ax.plot([], [], color="red", label=legend_labels[3])
+    
+    ax.legend(loc="upper right", fontsize=6)
+
     canvas = 12.0
     ax.set_xlim(-canvas, canvas)
     ax.set_ylim(-canvas, canvas)
@@ -130,5 +146,6 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
 
 
