@@ -109,7 +109,7 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
     
     # Plot invisible points just to get legend entries
     # Add text-only legend
-      legend_text = (
+    legend_text = (
         "Mass → shading\n"
         "  • Darker fill = larger mass.\n"
         "\n"
@@ -164,6 +164,7 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
 
 
 
