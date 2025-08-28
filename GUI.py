@@ -108,12 +108,22 @@ def generate_damage_image(mass, speed, height_of_burst, entry_angle_deg):
     ]
     
     # Plot invisible points just to get legend entries
-    ax.plot([], [], color="black", label=legend_labels[0])
-    ax.plot([], [], color="gray", label=legend_labels[1])
-    ax.plot([], [], color="blue", label=legend_labels[2])
-    ax.plot([], [], color="red", label=legend_labels[3])
+    # Add text-only legend
+    legend_text = (
+        "Mass shading = darker → larger mass\n"
+        "KE = ellipse size (from mass & speed)\n"
+        "Height of burst = eccentricity\n"
+        "Entry angle = orientation of ellipse"
+    )
     
-    ax.legend(loc="upper right", fontsize=6)
+    # Show legend as a text box
+    ax.text(
+        1.05, 0.95, legend_text,
+        transform=ax.transAxes,
+        fontsize=6,
+        va="top", ha="left",
+        bbox=dict(facecolor="white", alpha=0.7, edgecolor="none")
+    )
 
     canvas = 12.0
     ax.set_xlim(-canvas, canvas)
@@ -146,6 +156,7 @@ def main():
 if __name__ == "__main__":
 
     main() 
+
 
 
 
